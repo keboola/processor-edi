@@ -1,0 +1,1 @@
+An EDI (Electronic Data Interchange) file is a standardized format for exchanging business documents between organizations electronically. It streamlines transactions by using a common language to share data like purchase orders, invoices, and shipping notices.

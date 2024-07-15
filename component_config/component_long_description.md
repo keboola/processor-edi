@@ -1,0 +1,1 @@
+An EDI files processor is a tool designed to parse EDI files and convert the structured data into readable tables. It extracts key information from EDI transactions, transforming them into organized table formats for easier analysis and integration with other systems.
