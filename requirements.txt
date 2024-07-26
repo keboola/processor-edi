@@ -4,3 +4,5 @@ keboola.http-client
 freezegun
 mock
 pydantic
+click
+dicttoxml

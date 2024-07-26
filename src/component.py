@@ -1,27 +1,15 @@
-"""
-Template Component main class.
-
-"""
 import csv
-from datetime import datetime
 import logging
+import os
+from badx12.parser import Parser
 
 from keboola.component.base import ComponentBase
 from keboola.component.exceptions import UserException
 
-from configuration import Configuration
+from configuration import Configuration # noqa
 
 
 class Component(ComponentBase):
-    """
-        Extends base class for general Python components. Initializes the CommonInterface
-        and performs configuration validation.
-
-        For easier debugging the data folder is picked up by default from `../data` path,
-        relative to working directory.
-
-        If `debug` parameter is present in the `config.json`, the default logger is set to verbose DEBUG mode.
-    """
 
     def __init__(self):
         super().__init__()
@@ -30,58 +18,80 @@ class Component(ComponentBase):
         """
         Main execution code
         """
+        # params = Configuration(**self.configuration.parameters)
 
-        # ####### EXAMPLE TO REMOVE
-        # check for missing configuration parameters
-        params = Configuration(**self.configuration.parameters)
+        input_files = self.get_input_files_definitions()
 
-        # Access parameters in configuration
-        if params.print_hello:
-            logging.info("Hello World")
-
-        # get input table definitions
-        input_tables = self.get_input_tables_definitions()
-        for table in input_tables:
-            logging.info(f'Received input table: {table.name} with path: {table.full_path}')
-
-        if len(input_tables) == 0:
+        if len(input_files) == 0:
             raise UserException("No input tables found")
 
-        # get last state data/in/state.json from previous run
-        previous_state = self.get_state_file()
-        logging.info(previous_state.get('some_parameter'))
+        for in_file in input_files:
+            logging.info(f'Processing input file: {in_file.name}')
+            parser = Parser()
+            document = parser.parse_document(in_file.full_path).to_dict()
 
-        # Create output table (Table definition - just metadata)
-        table = self.create_out_table_definition('output.csv', incremental=True, primary_key=['timestamp'])
+            out_table_name = self.remove_suffix(in_file.name)
+            table = self.create_out_table_definition(out_table_name, incremental=True, primary_key=[])
+            interchange = document.get("document", {}).get("interchange", {})
 
-        # get file path of the table (data/out/tables/Features.csv)
-        out_table_path = table.full_path
-        logging.info(out_table_path)
+            with open(table.full_path, 'w', newline='') as csv_file:
+                csv_writer = csv.DictWriter(csv_file, fieldnames=["name", "required", "description", "content",
+                                                                  "max_length", "min_length"])
+                csv_writer.writeheader()
+                for field in self.process_interchange(interchange):
+                    csv_writer.writerow(field)
 
-        # Add timestamp column and save into out_table_path
-        input_table = input_tables[0]
-        with (open(input_table.full_path, 'r') as inp_file,
-              open(table.full_path, mode='wt', encoding='utf-8', newline='') as out_file):
-            reader = csv.DictReader(inp_file)
+            self.write_manifest(table)
 
-            columns = list(reader.fieldnames)
-            # append timestamp
-            columns.append('timestamp')
+    @staticmethod
+    def yield_fields(fields) -> dict:
+        if fields:
+            for field in fields:
+                yield field
 
-            # write result with column added
-            writer = csv.DictWriter(out_file, fieldnames=columns)
-            writer.writeheader()
-            for in_row in reader:
-                in_row['timestamp'] = datetime.now().isoformat()
-                writer.writerow(in_row)
+    def process_interchange(self, interchange):
+        trailer_fields = interchange.get("trailer", {}).get("fields")
+        yield from self.yield_fields(trailer_fields)
 
-        # Save table manifest (output.csv.manifest) from the Table definition
-        self.write_manifest(table)
+        body = interchange.get("body")
+        if body:
+            body = body[0]
+            body_trailer_fields = body.get("trailer", {}).get("fields")
+            yield from self.yield_fields(body_trailer_fields)
 
-        # Write new state - will be available next run
-        self.write_state_file({"some_state_parameter": "value"})
+            body_body = body.get("body", [{}])[0]
+            body_body_fields = body_body.get("fields")
+            yield from self.yield_fields(body_body_fields)
 
-        # ####### EXAMPLE TO REMOVE END
+            transaction_sets = body.get("transaction_sets", [{}])
+            transaction_set_fields = transaction_sets[0].get("fields")
+            yield from self.yield_fields(transaction_set_fields)
+
+        groups = interchange.get("groups")
+        if groups:
+            groups = groups[0]
+            group_header_fields = groups.get("header", {}).get("fields")
+            yield from self.yield_fields(group_header_fields)
+
+            group_body = groups.get("body", [{}])[0]
+            group_body_fields = group_body.get("fields")
+            yield from self.yield_fields(group_body_fields)
+
+            group_trailer_fields = groups.get("trailer", {}).get("fields")
+            yield from self.yield_fields(group_trailer_fields)
+
+    @staticmethod
+    def remove_suffix(filename: str) -> str:
+        """
+        Removes the suffix from a filename.
+
+        Parameters:
+        filename (str): The name of the file.
+
+        Returns:
+        str: The filename without its suffix.
+        """
+        return os.path.splitext(filename)[0]
 
 
 """
