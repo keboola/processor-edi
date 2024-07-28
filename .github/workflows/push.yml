@@ -3,8 +3,8 @@ on: [ push ]
 concurrency: ci-${{ github.ref }} # to avoid tag collisions in the ECR
 env:
   # repository variables:
-  KBC_DEVELOPERPORTAL_APP: "keboola.ex-service-name" # replace with your component id
-  KBC_DEVELOPERPORTAL_VENDOR: "keboola" # replace with your vendor
+  KBC_DEVELOPERPORTAL_APP: "keboola.processor-edi"
+  KBC_DEVELOPERPORTAL_VENDOR: "keboola"
   DOCKERHUB_USER: ${{ vars.DOCKERHUB_USER }}
   KBC_DEVELOPERPORTAL_USERNAME: ${{ vars.KBC_DEVELOPERPORTAL_USERNAME }}
 
@@ -128,15 +128,15 @@ jobs:
   tests-kbc:
     name: Run KBC Tests
     env:
-      KBC_TEST_PROJECT_CONFIGS: ${{ env.KBC_TEST_PROJECT_CONFIGS }}
+      KBC_TEST_PROJECT_CONFIGS: env.KBC_TEST_PROJECT_CONFIGS
       KBC_STORAGE_TOKEN: ${{ secrets.KBC_STORAGE_TOKEN }}
     needs:
       - push_event_info
       - build
     runs-on: ubuntu-latest
-    if: env.KBC_TEST_PROJECT_CONFIGS != '' && env.KBC_STORAGE_TOKEN != ''
     steps:
       - name: Run KBC test jobs
+        if: ${{ env.KBC_TEST_PROJECT_CONFIGS != '' }} && ${{ env.KBC_STORAGE_TOKEN != '' }}
         uses: keboola/action-run-configs-parallel@master
         with:
           token: ${{ secrets.KBC_STORAGE_TOKEN }}
