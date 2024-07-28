@@ -34,6 +34,9 @@ class Component(ComponentBase):
             table = self.create_out_table_definition(out_table_name, incremental=True, primary_key=[])
             interchange = document.get("document", {}).get("interchange", {})
 
+            # needed for tests
+            os.makedirs(os.path.dirname(table.full_path), exist_ok=True)
+
             with open(table.full_path, 'w', newline='') as csv_file:
                 csv_writer = csv.DictWriter(csv_file, fieldnames=["name", "required", "description", "content",
                                                                   "max_length", "min_length"])
