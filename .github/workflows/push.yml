@@ -134,9 +134,9 @@ jobs:
       - push_event_info
       - build
     runs-on: ubuntu-latest
+    if: env.KBC_TEST_PROJECT_CONFIGS != '' && env.KBC_STORAGE_TOKEN != ''
     steps:
       - name: Run KBC test jobs
-        if: ${{ env.KBC_TEST_PROJECT_CONFIGS != '' }} && ${{ env.KBC_STORAGE_TOKEN != '' }}
         uses: keboola/action-run-configs-parallel@master
         with:
           token: ${{ secrets.KBC_STORAGE_TOKEN }}
