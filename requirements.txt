@@ -6,3 +6,4 @@ mock
 pydantic
 click
 dicttoxml
+https://bitbucket.org/kds_consulting_team/datadirtest/get/1.3.1.zip#egg=datadirtest

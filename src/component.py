@@ -50,12 +50,18 @@ class Component(ComponentBase):
                 yield field
 
     def process_interchange(self, interchange):
+        header_fields = interchange.get("header", {}).get("fields")
+        yield from self.yield_fields(header_fields)
+
         trailer_fields = interchange.get("trailer", {}).get("fields")
         yield from self.yield_fields(trailer_fields)
 
         body = interchange.get("body")
         if body:
             body = body[0]
+            body_header_fields = body.get("header", {}).get("fields")
+            yield from self.yield_fields(body_header_fields)
+
             body_trailer_fields = body.get("trailer", {}).get("fields")
             yield from self.yield_fields(body_trailer_fields)
 
@@ -73,24 +79,20 @@ class Component(ComponentBase):
             group_header_fields = groups.get("header", {}).get("fields")
             yield from self.yield_fields(group_header_fields)
 
+            group_trailer_fields = groups.get("trailer", {}).get("fields")
+            yield from self.yield_fields(group_trailer_fields)
+
             group_body = groups.get("body", [{}])[0]
             group_body_fields = group_body.get("fields")
             yield from self.yield_fields(group_body_fields)
 
-            group_trailer_fields = groups.get("trailer", {}).get("fields")
-            yield from self.yield_fields(group_trailer_fields)
+            group_transaction_sets = group_body.get("transaction_sets", [{}])
+            group_transaction_set_fields = group_transaction_sets[0].get("fields")
+            yield from self.yield_fields(group_transaction_set_fields)
 
     @staticmethod
     def remove_suffix(filename: str) -> str:
-        """
-        Removes the suffix from a filename.
-
-        Parameters:
-        filename (str): The name of the file.
-
-        Returns:
-        str: The filename without its suffix.
-        """
+        """Removes the suffix from a filename."""
         return os.path.splitext(filename)[0]
 
 
