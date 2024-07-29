@@ -5,7 +5,7 @@ env:
   # repository variables:
   KBC_DEVELOPERPORTAL_APP: "keboola.processor-edi"
   KBC_DEVELOPERPORTAL_VENDOR: "keboola+ComponentFactory_CI"
-  DOCKERHUB_USER: ${{ vars.DOCKERHUB_USER }}
+  DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
   KBC_DEVELOPERPORTAL_USERNAME: ${{ vars.KBC_DEVELOPERPORTAL_USERNAME }}
 
   # repository secrets:
