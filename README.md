@@ -4,11 +4,6 @@ EDI Files Processor
 This processor allows you to convert EDI files into CSV files. It uses edireader library under the hood.
 https://github.com/BerryWorksSoftware/edireader
 
-**Table of contents:**
-
-[TOC]
-
-
 Configuration
 =============
 
