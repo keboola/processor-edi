@@ -25,8 +25,8 @@ Output
 
 ### Processor Output Columns
 
-1. filename
-2. element_Id
+1. filename PK
+2. element_Id PK
 3. segment_Id
 4. element_Composite
 5. element_text
