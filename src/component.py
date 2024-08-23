@@ -51,7 +51,7 @@ class Component(ComponentBase):
             self.run_edireader(edi_input_file=in_file.full_path,
                                xml_output_file=out_path)
 
-        out_t = self.create_out_table_definition("edi_processor_output.csv", columns=output_columns,
+        out_t = self.create_out_table_definition("edi_processor_output.csv", schema=output_columns,
                                                  primary_key=["filename", "element_Id"])
 
         with open(out_t.full_path, mode='w', newline='') as csvfile:
@@ -85,7 +85,7 @@ class Component(ComponentBase):
             subprocess.CalledProcessError: If the Java process encounters an error.
         """
         # Base command
-        command = ['java', '-jar', 'src/edireader-5.4.12.jar', edi_input_file]
+        command = ['java', '-jar', 'edireader-5.4.12.jar', edi_input_file]
 
         # Add optional parameters
         if xml_output_file:
