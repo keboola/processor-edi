@@ -85,7 +85,7 @@ class Component(ComponentBase):
             subprocess.CalledProcessError: If the Java process encounters an error.
         """
         # Base command
-        command = ['java', '-jar', 'edireader-5.4.12.jar', edi_input_file]
+        command = ['java', '-jar', 'src/edireader-5.4.12.jar', edi_input_file]
 
         # Add optional parameters
         if xml_output_file:
