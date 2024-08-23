@@ -54,6 +54,10 @@ class Component(ComponentBase):
         out_t = self.create_out_table_definition("edi_processor_output.csv", schema=output_columns,
                                                  primary_key=["filename", "element_Id"])
 
+        # ensure dir exists for tests
+        out_dir = os.path.dirname(out_t.full_path)
+        os.makedirs(out_dir, exist_ok=True)
+
         with open(out_t.full_path, mode='w', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=output_columns)
             writer.writeheader()
