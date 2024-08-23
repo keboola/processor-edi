@@ -1,51 +1,64 @@
-EDI Processor
+EDI Files Processor
 =============
 
-Description
+This processor allows you to convert EDI files into CSV files. It uses edireader library under the hood.
+https://github.com/BerryWorksSoftware/edireader
 
 **Table of contents:**
 
 [TOC]
 
-Functionality notes
-===================
-
-Prerequisites
-=============
-
-Get the API token, register application, etc.
-
-Features
-========
-
-| **Feature**             | **Note**                                      |
-|-------------------------|-----------------------------------------------|
-| Generic UI form         | Dynamic UI form                               |
-| Row Based configuration | Allows structuring the configuration in rows. |
-| oAuth                   | oAuth authentication enabled                  |
-| Incremental loading     | Allows fetching data in new increments.       |
-| Backfill mode           | Support for seamless backfill setup.          |
-| Date range filter       | Specify date range.                           |
-
-Supported endpoints
-===================
-
-If you need more endpoints, please submit your request to
-[ideas.keboola.com](https://ideas.keboola.com/)
 
 Configuration
 =============
 
-Param 1
--------
+The processor currently has no configuration options. It converts EDI files into CSV files with predefined columns.
 
-Param 2
--------
+Sample configuration:
+```
+  "parameters": {
+  }
+```
 
 Output
 ======
 
-List of tables, foreign keys, schema.
+### Processor Output Columns
+
+1. filename
+2. element_Id
+3. segment_Id
+4. element_Composite
+5. element_text
+6. group_Control
+7. group_Date
+8. group_GroupType
+9. group_StandardCode
+10. group_StandardVersion
+11. group_Time
+12. interchange_AckRequest
+13. interchange_Authorization
+14. interchange_AuthorizationQual
+15. interchange_Control
+16. interchange_Date
+17. interchange_Security
+18. interchange_SecurityQual
+19. interchange_Standard
+20. interchange_TestIndicator
+21. interchange_Time
+22. interchange_Version
+23. loop_Id
+24. receiver_id
+25. subelement_Sequence
+26. subelement_text
+27. submitter_id
+28. transaction_Control
+29. transaction_DocType
+30. transaction_Name
+31. transaction_Version
+32. group_ApplReceiver
+33. group_ApplSender
+
 
 Development
 -----------
