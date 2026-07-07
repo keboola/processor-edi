@@ -12,7 +12,7 @@ COPY deploy.sh /code/deploy.sh
 RUN apt update && \
     apt install -y \
     build-essential \
-    openjdk-17-jre-headless && \
+    openjdk-21-jre-headless && \
     apt clean
 
 RUN pip install flake8
